@@ -3,18 +3,18 @@ title: Transport-Reachability-Network Analysis
 subtitle: Assignment im Rahmen der Vorlesung 'Social Network Analyis'
 author: Johannes Bubeck
 output:
-  html_document:
-    highlight: tango
-    number_sections: yes
-    theme: united
-    toc: yes
-    toc_depth: 2
   pdf_document:
     highlight: tango
     number_sections: yes
     toc: yes
     toc_depth: 2
     latex_engine: pdflatex
+  html_document:
+    highlight: tango
+    number_sections: yes
+    theme: united
+    toc: yes
+    toc_depth: 2
 header-includes: 
    \usepackage{graphicx}
    \usepackage{fancyhdr}
