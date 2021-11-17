@@ -111,6 +111,7 @@ Die Erkundung der zur Verfügung stehenden Datenbasis findet im Kapitel "Daten E
 Weiterhin kann über "summary()" ein Blick auf die Datentypen und erste Statistiken des Datensatzes geworfen werden. Damit ist es möglich ein erstes Gefühl für die Datenbasis zu bekommen und eventuelle fehlende Daten oder falsche Datentypen in einem "Data-Cleaning" zu beheben.
 In diesem Fall sind neben der Spaltenumbenennung und der Konvertierung der negativen Werte keine weiteren Manipulationen nötig. 
 
+\newpage 
 ```{r exploring dat}
 head(dat)
 summary(dat)
@@ -166,7 +167,7 @@ calc_top_pop
 Das Kapitel Visualisierung dient der erweiterten Daten Exploration. Mithilfe der nachfolgenden Plots können die Daten noch besser verstanden werden und weitere Erkenntnisse daraus geschlossen werden. 
 
 Als ersten Plot wird die Verteilung des Grad der Zentralität für jeden Knoten ausgegeben. Dadurch kann ein Gesamtüberblick erreicht werden. Auffällig hierbei ist, dass es relativ viele Knoten gibt, bei denen der Grad 0 oder sehr klein ist. Interessant ist jedoch auch, dass es Knoten mit sehr großen Werten jenseits von 500 gibt. Diese könnten interessant für die Beantwortung der Forschungsfrage sein. 
-
+\newpage
 ```{r count degree}
 ggplot(data = degree_df, aes(x = degree)) +
   geom_bar(size = .8, colour="#e2001a") +
@@ -177,7 +178,7 @@ ggplot(data = degree_df, aes(x = degree)) +
 ```
 
 Weiterhin ist die Verteilung der Populationszahlen ein wichtiger Schritt im Verständnis des Datensatzes. Dafür kommt als nächste Visualisierung ein Boxplot zum Einsatz. Dieser zeigt den Durchschnitt der Bevölkerungszahlen sowie Ausreißer nach oben und unten. 
-
+\newpage
 ```{r pop viz}
 ggplot(data = degree_pop_df, aes(y=metro_pop)) +
   geom_boxplot(size = .8) +
@@ -186,9 +187,12 @@ ggplot(data = degree_pop_df, aes(y=metro_pop)) +
   ggtitle("Verteilung Bevölkerung")
 ```
 
-Für die Visualisierung des Netzwerks wird aus Übersichtsgründen als ersten Schritt ein Sample von 200 Datenpunkten extrahiert. Anschließend folgen drei verschiedene Plots des Netzwerks.
 
-```{r sample}
+Für die Visualisierung des Netzwerks wird aus Übersichtsgründen als ersten Schritt ein Sample von 200 Datenpunkten extrahiert. Anschließend folgen drei verschiedene Plots des Netzwerks. \
+Aufrgrund der Tatsache, dass es sich um gewichtete Kanten handelt, ist auffällig, dass die Städte bis auf einige Ausreißer von der Entfernung relativ ähnlich sind. Der dritte Plot zeigt deutlich, dass es verschieden lange Flugverbindungen zwischen den Flughäfen an sich gibt.
+
+\newpage
+```{r sample fr}
 dat_sample <- sample_n(dat2, 200)
 
 net_sample <- as_tbl_graph(dat_sample)
@@ -197,14 +201,18 @@ ggraph(net_sample, layout = 'fr', maxiter = 100) +
   geom_node_point(colour="#e2001a") + 
   geom_edge_link(alpha = .4) +
   theme_graph()
+```
 
+\newpage
+```{r sample kk}
 ggraph(net_sample, layout = 'kk', maxiter = 100) + 
   geom_node_point(colour="#e2001a") + 
   geom_edge_link(alpha = .4) +
   theme_graph()
+```
 
-
-# coord diagramm
+\newpage
+```{r sample linear}
 ggraph(net_sample, layout = 'linear', circular = TRUE) + 
   geom_node_point(colour="#e2001a") +
   geom_edge_arc(alpha = .4) +
@@ -261,4 +269,8 @@ ggplot(calc_top_degree, aes(x=name, y=metro_pop))+
   ggtitle("Top 10 - Grad der Zentralität und Bevölkerung")
 ```
 
+Der Plot zeigt, dass die anfangs aufgestellte Forschungsfrage nicht zutrifft. Die top 10 der "zentralsten" Flughäfen dieses Datensatzes liegen nicht wie vermutet weit über der durchschnittlichen Bevölkerung, sie liegen sogar leicht darunter. Dennoch sind diese Städte keine "kleinen Städte". Mit über 200 000 Einwohnern kann man durchaus von einer Großstadt sprechen. Dies macht auch Sinn, da in größeren Städten nactürlich mehr Personen befördert werden müssen und sich dort zum Teil natürlich auch Umsteigeflughäfen befinden. \
+
 ## Reflexion
+Kritisch reflektiert lässt sich anmerken, dass durch das erzeugen eines Samples von 200 Datenpunkten, die Netzwerkvisualisierungen nicht vollkommen der Realität entsprechen. Dennoch repräsentieren diese einen Teil der Daten und können dennoch repräsentativ betrachtet werden. \
+Trotz der widerlegten Forschungsfrage ist das Projekt von Datenvorverarbeitung über Daten Exploration, Modellierung und Visualisierungen ohne größere Probleme und Komplikationen verlaufen. 
