@@ -1,0 +1,129 @@
+---
+title: Transport reachability Network Analysis
+subtitle: Assignment im Rahmen der Vorlesung 'Social Network Analyis'
+author: Johannes Bubeck
+output:
+  pdf_document:
+    highlight: tango
+    number_sections: yes
+    toc: yes
+    toc_depth: 2
+  html_document:
+    highlight: tango
+    number_sections: yes
+    theme: united
+    toc: yes
+    toc_depth: 2
+header-includes: 
+   \usepackage{graphicx}
+   \usepackage{fancyhdr}
+   \pagestyle{fancy}
+   \setlength\headheight{28pt}
+   \fancyhead[L]{\includegraphics[width=2.5cm]{Data/logo.png}}
+   \fancyfoot[LE,RO]{GPIM}
+editor_options:
+  chunk_output_type: console
+toc-title: Inhaltsverzeichnis
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Loading Libraries
+```{r library, message=FALSE, warning=FALSE, paged.print=FALSE}
+library("tidyverse")
+library("igraph") 
+library("tidygraph") 
+library("ggraph")
+library("ggplot2")
+```
+
+
+## Import Dataset 
+```{r import, message=FALSE, warning=FALSE, paged.print=FALSE}
+dat <- read_csv('Data/reachability-meta.csv')
+dat2 <- read.table('Data/reachability.txt')
+```
+
+## Renaming Columns
+```{r}
+dat2 <- dat2 %>% 
+  rename(
+    from = V1,
+    weight = V2,
+    to = V3
+  )
+```
+
+
+## Exploring Dataset
+This is a transportation reachability network for cities in the United States and Canada. Edges are weighted so that there is an edge from city i to city j if the estimated airline travel time is less than a threshold. The travel time includes estimated stopover delays. Due to headwinds, the network is asymmetric. We include the city metropolitan populations, latitude, and longitude in this dataset.
+```{r exploring dat}
+head(dat)
+summary(dat)
+```
+
+```{r exploring dat2}
+head(dat2)
+summary(dat2)
+```
+
+
+## First Plots
+```{r first plots}
+net <- as_tbl_graph(dat2)
+
+# plot(net)
+
+#ggraph(net) +
+ # geom_node_point() +
+ # geom_edge_link(alpha = 0.3)
+
+```
+
+## Visualisierungen
+```{r viz}
+degree <- degree(net)
+
+degree_df <- as.data.frame(degree)
+
+
+ggplot(data = degree_df, aes(x = degree)) +
+  geom_bar(size = .8) +
+  theme_classic() +
+  scale_y_log10()
+
+```
+
+## Sample
+```{r sample}
+dat_sample <- sample_n(dat2, 200)
+
+net_sample <- as_tbl_graph(dat_sample)
+
+ggraph(net_sample, layout = 'fr', maxiter = 100) + 
+  geom_node_point() + 
+  geom_edge_link(alpha = .4) +
+  theme_graph()
+
+ggraph(net_sample, layout = 'kk', maxiter = 100) + 
+  geom_node_point() + 
+  geom_edge_link(alpha = .4) +
+  theme_graph()
+
+
+# coord diagramm
+ggraph(net_sample, layout = 'linear', circular = TRUE) + 
+  geom_node_point() +
+  geom_edge_arc(alpha = .4) +
+  theme_graph()
+
+
+```
+
+
+## Erste Fragestellungen
+1. Werden Flughäfen in Städten, in denen mehr Einwohner wohnen, häufiger angeflogen?
+2. 
+

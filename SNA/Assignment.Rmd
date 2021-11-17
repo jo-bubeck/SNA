@@ -1,0 +1,175 @@
+---
+title: Amazon Network Analysis
+subtitle: Assignment im Rahmen der Vorlesung 'Social Network Analyis'
+author: Ferdinand Bubeck
+output:
+  pdf_document:
+    highlight: tango
+    number_sections: yes
+    toc: yes
+    toc_depth: 2
+  html_document:
+    highlight: tango
+    number_sections: yes
+    theme: united
+    toc: yes
+    toc_depth: 2
+header-includes: 
+   \usepackage{graphicx}
+   \usepackage{fancyhdr}
+   \pagestyle{fancy}
+   \setlength\headheight{28pt}
+   \fancyhead[L]{\includegraphics[width=2.5cm]{Data/logo.png}}
+   \fancyfoot[LE,RO]{GPIM}
+editor_options:
+  chunk_output_type: console
+toc-title: Inhaltsverzeichnis
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+\newpage
+# Einleitung
+
+## Zielsetzung
+
+## Vorgehensweise
+Als Vorgehensweise wird in diesem Projekt das für das Feld Data Science etablierte Standard-Vorgehen CRISP-DM gewählt (Cross Industry Standard Process for Data Mining). In mehreren Phasen werden so von dem richtigen Verständnis der Daten, dem Data Wrangling und Data Preprocessing bis hin zum Modelfitting und der Evaluation alle entscheidenen Schritte strukturiert durchlaufen, um ein optimales Ergebnis aus den Daten zu generieren. In der Abbildung 1 ist das Vorgehensmodell abgebildet. Da es sich in diesem Projekt um ein PoC handelt, wird die letzte Phase 'Deployment' ausgelassen.
+
+![CRISP-DM (Source: https://statistik-dresden.de/archives/1128))](Data/CRISP-DM_Process_Diagram1.png){width=50%}
+
+
+
+\newpage
+# Hauptteil
+## Business Understanding
+
+- Welche Produkte werden nur in Verbindung mit anderen Produkten gekauft?
+- Welche Produkte sind zentral?
+
+### Laden der Libraries
+```{r libraries, message=FALSE, warning=FALSE}
+library("tidyverse")
+library("tidygraph")
+library("igraph")
+library("ggraph")
+```
+
+
+### Importieren der Daten
+Die Daten stammen aus der Datensatz-Bibliothek der Stanford University und können als .txt unter folgendem Lin heruntergeladen werden. (Link: https://snap.stanford.edu/data/amazon0302.html)
+
+Zum Einlesen der Daten kommt im Folgenden die Funktion \textit{read.table} zum Einsatz.\
+
+```{r data}
+amazon <- read.table("Data/Amazon0302.txt")
+```
+
+## Data Understanding
+Um einen ersten Einblick in die Daten zu erhalten, wird mit der Funktion \textit{head} die ersten Zeilen des Datensatzes ausgegeben. Zusätzlich dazu ist es von entscheidender Rolle, die Qualität der Daten zu bewerten. Aus diesem Grund werden alle fehlenden Werte, sogenannte NAs gezählt und ausgegeben.\
+
+```{r exploration}
+head(amazon)
+
+# Count NAs
+which(is.na(amazon))
+```
+
+Der Dataframe besteht aus 3 Spalten: einer ID Spalte, und zwei Kantenspalten. Des Weiteren weisen die Daten keine Lücken und fehlenden Werte auf, sodass der komplette Datensatz für das weitere Vorgehen genutzt werden kann.
+
+## Data Preparation
+Auf Basis der vorangegangen Schritte müssen nun weitere Anpassungen der Daten erfolgen, um damit arbeiten zu können. Zum Einen werden die Kantenspalten von ihren ursprünglichen Namen in sprechendere Bezeichnungen umbenannt. Im gleichen Schritt werden alle Werte um 1 erhöht, sodass keine Nullen mehr existieren.\
+
+```{r manipulation}
+dat <- amazon %>% 
+  rename(
+    from = V1,
+    to = V2
+  ) %>% 
+  mutate(
+    from = from+1,
+    to = to+1
+  )
+
+```
+
+## Modeling
+Nach der Datenbearbeitung kann nun das Netz gefittet werden. Hierzu wird die Funktion \textit{as_tbl_graph} angewendet, um ein Netz zu erstellen.\
+
+```{r net}
+net <- as_tbl_graph(dat)
+
+
+degree <- degree(net)
+
+# Adjacency Matrix
+adjacencyMatrix <- net[]
+
+```
+
+## Data Visualization
+```{r viz, message=FALSE, warning=FALSE}
+degree_df <- as.data.frame(degree)
+
+
+ggplot(data = degree_df, aes(x=degree))+
+  geom_bar(fill = "blue", colour = "blue", alpha=.5)+
+  scale_y_continuous(trans='log2')+
+  xlim(0,150)+
+  labs(title = "Histogram of Node-Degrees", subtitle = "Amazon Network Analysis", 
+       y = "Frequency (log2 scale)", x = "Degree of Vertices (xlim = 150)")+
+  theme_classic()
+
+
+
+```
+
+## Experimental Data
+
+```{r message=FALSE, warning=FALSE}
+# Subsetting Data
+dat_exp <- dat[1:200,]
+
+net_exp <- as_tbl_graph(dat_exp)
+
+net_exp <- net_exp %>% 
+  activate(nodes) %>% 
+  mutate(
+    degree = centrality_degree()
+  )
+
+# Data Viz for Subset
+# network diagramm
+ggraph(net_exp, layout = 'fr', maxiter = 100) + 
+  geom_node_point(colour="blue") + 
+  geom_edge_link(alpha = .4) +
+  theme_graph()
+
+ggraph(net_exp, layout = 'kk', maxiter = 100) + 
+  geom_node_point(colour="blue") + 
+  geom_edge_link(alpha = .4) +
+  theme_graph()
+
+
+# coord diagramm
+ggraph(net_exp, layout = 'linear', circular = TRUE) + 
+  geom_node_point(colour="blue") +
+  geom_edge_arc(alpha = .4) +
+  theme_graph()
+
+```
+
+\newpage
+
+# Fazit
+
+## Evaluation der Ergebnisse
+tbd
+
+## kritische Reflexion
+tbd
+
+
+
