@@ -246,7 +246,7 @@ mean_population
 ```
 
 Um nun die Verbindung aus den Zentralitätsdaten und den Bevölkerungszahlen herzustellen, wird dafür nachfolgend eine Visualisierung verwendet. \
-Diese zeigt die Top 10 Städte mit dem höchsten Grad der Zentralität im Datensatz sowie die 
+Diese zeigt die Top 10 Städte mit dem höchsten Grad der Zentralität im Datensatz sowie das arithmetische Mittel der Population.
 
 ```{r results}
 ggplot(calc_top_degree, aes(x=name, y=metro_pop))+
