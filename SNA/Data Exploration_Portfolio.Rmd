@@ -15,13 +15,6 @@ output:
     theme: united
     toc: yes
     toc_depth: 2
-header-includes: 
-   \usepackage{graphicx}
-   \usepackage{fancyhdr}
-   \pagestyle{fancy}
-   \setlength\headheight{28pt}
-   \fancyhead[L]{\includegraphics[width=2.5cm]{Data/logo.png}}
-   \fancyfoot[LE,RO]{GPIM}
 editor_options:
   chunk_output_type: console
 toc-title: Inhaltsverzeichnis
@@ -30,13 +23,16 @@ toc-title: Inhaltsverzeichnis
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+\newpage
 # Einleitung
 ## Vorgehensweise und Zielsetzung
 Die Zielsetzung dieses Projekts ist die Durchführung einer "Social Network Analysis" im Rahmen der Leistungsbeurteilung des gleichnamigen DHBW-Kurses. Die Datenbasis der Analyse und des Assignments stellt der Datensatz "Airline travel reachability network" dar (https://snap.stanford.edu/data/reachability.html).
 
-Folgende Abbildung zeigt die Vorgehensweise dieses Projekts. In der Einleitung wird das Vorgehen des "Social Network Analysis Projekts" beschrieben. Weiterhin wird die Zielsetzung und die des Assignment zugrundeliegende Forschungsfrage definiert. Der Hauptteil des Assignments bildet eine "klassische" Vorgehensweise im Data Analytics Bereich ab. In einem ersten Schritt wird zunächst der theoretische Hintergrund des Projekts dargelegt. Dazu werden unter anderem Punkte wie die verfügbaren Daten, die Netzwerkdefinition, Flow Struktur und das Zentralitätsmaß näher beleichtet. Nach der Datenvorverarbeitung und dem Laden der notwendigen Bibliotheken, die für die Analyse notwendig sind, erfolgt der Datenimport. Weiterhin dient eine Explorative Analyse der Daten näheren Einblicken in die verfügbaren Daten und deren Qualität. Schließlich wird im letzten Schritt des Hauptteils die Modellierung und Visualisierung durchgeführt. Das Fazit beschäftigt sich zum Einen mit der Bündelung und Präsentation der Daten und zum Anderen einem Ausblick. 
+Folgende Abbildung zeigt die Vorgehensweise dieses Projekts. In der Einleitung wird das Vorgehen des "Social Network Analysis Projekts" beschrieben. Weiterhin wird die Zielsetzung und die des Assignment zugrundeliegende Forschungsfrage definiert. Der Hauptteil des Assignments bildet eine "klassische" Vorgehensweise im Data Analytics Bereich ab. In einem ersten Schritt wird zunächst der theoretische Hintergrund des Projekts dargelegt. Dazu werden unter anderem Punkte wie die verfügbaren Daten, die Netzwerkdefinition, Flow Struktur und das Zentralitätsmaß näher beleichtet. Nach der Datenvorverarbeitung und dem Laden der notwendigen Bibliotheken, die für die Analyse notwendig sind, erfolgt der Datenimport. Weiterhin dient eine Explorative Analyse der Daten näheren Einblicken in die verfügbaren Daten und deren Qualität. Schließlich wird im letzten Schritt des Hauptteils die Modellierung und Visualisierung durchgeführt. Das Fazit beschäftigt sich zum Einen mit der Bündelung und Präsentation der Daten und zum Anderen einem Ausblick. \
 
-![](Data/Vorgehensweise.png){width=50%}
+<center>
+![](Data/Vorgehensweise.png){width=90%}
+</center>
 
 
 ## Forschungsfrage
@@ -44,6 +40,7 @@ Der Datensatz "Airline travel reachability network" bildet Flugverbindungen für
 
 Werden Flughäfen in Städten mit mehr Einwohnern häufiger angeflogen, als Städte mit weniger Population? 
 
+\newpage
 # Hauptteil
 ## Theoretischer Hintergrund
 Das Kapitel theoretischer Hintergrund dient dem Verständnis der nachfolgenden Netzwerkanalyse. Es wird unter anderem auf den Datensatz an sich eingegangen, der Netzwerktyp analysiert und Flow Struktur und Zentralitätsmaße erörtert.
@@ -124,6 +121,7 @@ head(dat2)
 summary(dat2)
 ```
 
+\newpage
 ## Modellierung
 Ziel des Kapitels Modellierung ist zum Einen ein Netzwerkobjekt als "tbl_graph" zu modellieren und zum Anderen weitere Attribute und Werte zu berechnen, die für die Visualisierungen und die Beantwortung der Forschungsfrage im "Fazit" notwendig sind.
 
@@ -213,8 +211,14 @@ ggraph(net_sample, layout = 'linear', circular = TRUE) +
   theme_graph()
 ```
 
+\newpage
 # Fazit
 ## Ergebnisse
+Im Folgenden werden nun die Ergebnisse aus den vorangegangenen Kapiteln zusammengefasst und gebündelt. Weitherhin wird eine Antwort auf die Forschungsfrage, ob Flughäfen in Städten mit mehr Einwohnern häufiger angeflogen werden, als Städte mit weniger Population, gegeben. 
+
+Das vorangegangene Kapitel zeigt die 10 Städte, bei denen der Grad der Zentralität am höchsten ist. Dies sind also die Flughäfen, die am meisten Kanten also Flugverbindungen haben. Da es sich um gerichtete Kanten handelt, entspricht der Grad den ein- und ausgehenden Kanten. Mit diesen "zentralen" Flughäfen des Datensatzes kann nun also eine Interpretation bezüglich der Bevölkerung in diesen Städten vorgenommen werden. \
+Dafür werden im Folgenden das globale Maximum und Minimum aller Populationszahlen ermittelt: \
+
 ```{r calculating population}
 max_population <- max(degree_pop_df$metro_pop)
 min_population <- min(degree_pop_df$metro_pop)
@@ -226,6 +230,23 @@ mean_population_df <- data.frame(mean_population)
 calc_top_degree$mean_population <- mean_population
 ```
 
+Das Maximum der Populationszahlen liegt bei: 
+```{r max pop}
+max_population
+```
+
+Und das Minimum liegt bei:
+```{r min pop}
+min_population
+```
+
+Um zu beurteilen, ob eine Stadt besonders viel oder wenig Bevölkerung hat, wird hier als Metrik das Arithmetische Mittel verwendet. Dieses liegt bei:
+```{r mean pop}
+mean_population
+```
+
+Um nun die Verbindung aus den Zentralitätsdaten und den Bevölkerungszahlen herzustellen, wird dafür nachfolgend eine Visualisierung verwendet. \
+Diese zeigt die Top 10 Städte mit dem höchsten Grad der Zentralität im Datensatz sowie die 
 
 ```{r results}
 ggplot(calc_top_degree, aes(x=name, y=metro_pop))+
